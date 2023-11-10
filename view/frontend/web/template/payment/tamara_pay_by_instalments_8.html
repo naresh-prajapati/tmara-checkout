@@ -1,0 +1,85 @@
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label class="label" data-bind="attr: {'for': getCode()}">
+            <!-- ko if: isTotalAmountInLimit() -->
+            <img data-bind="attr: {src: tamaraBadgeSrc, alt: $t('Tamara')}" class="payment-icon" /><span data-bind="text: getTitle()"></span>
+            <a class="tamara-product-widget" data-bind="attr: {'id':'tamara-product-widget-' + getNumberOfInstalments(), 'data-lang': getPaymentLanguage(), 'data-price': getGrandTotal(), 'data-currency': currencyCode, 'data-country-code': countryCode, 'data-payment-type': 'installment', 'data-number-of-installments': getNumberOfInstalments(), 'data-inject-template': 'false', 'data-installment-minimum-amount': getMinLimitAmount(), 'data-installment-available-amount': getMinLimitAmount(), 'href': 'javascript:void(0)'}">
+                <img data-bind="attr: {src: tamaraImageSrc, alt: $t('Tamara')}" class="payment-icon" />
+            </a>
+            <!-- /ko -->
+            <!-- ko ifnot: isTotalAmountInLimit() -->
+            <img data-bind="attr: {src: tamaraBadgeSrc, alt: $t('Tamara')}" class="payment-icon" /><span data-bind="text: getTitle()"></span>
+            <!-- /ko -->
+        </label>
+    </div>
+
+    <div class="payment-method-content">
+        <div class="message error message-error hidden-error-iframe" data-bind="attr: {'id': 'error-iframe-pay-by-instalments-' + getNumberOfInstalments()}">
+        </div>
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div data-bind="visible: shouldShowError()">
+            <h4 data-bind="i18n: 'Payment information'"></h4>
+            <ul>
+                <li>
+                    <span data-bind="text: $t('Min Limit') + ' : ' + getMinLimit()"></span>
+                </li>
+                <li>
+                    <span data-bind="text: $t('Max Limit') + ' : ' + getMaxLimit()"></span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="message warning message-error" data-bind="visible: shouldShowError()">
+            <span data-bind="i18n: 'The grand total of order is over/under limit of Tamara.'"></span>
+        </div>
+
+        <div class="params">
+            <input type="hidden" data-bind="attr: {'id': 'order-id-pay-by-instalments-' + getNumberOfInstalments()}" value="0" />
+            <input type="hidden" class="render-product-widget" data-bind="visible: renderProductWidget()" />
+            <input type="hidden" class="render-installments-widget" data-bind="visible: renderInstallmentsPlanWidget()" />
+        </div>
+
+        <!-- ko if: (!shouldShowError()) -->
+        <div class="tamara-installment-plan-widget" data-bind="attr: {'id': 'tamara-installment-plan-widget-' + getNumberOfInstalments(), 'data-lang': getPaymentLanguage(), 'data-currency': currencyCode, 'data-country-code': countryCode, 'data-price': getGrandTotal(), 'data-installment-minimum-amount': getMinLimitAmount(), 'data-installment-maximum-amount': getMaxLimitAmount(), 'data-installment-available-amount': getMinLimitAmount(), 'data-number-of-installments': getNumberOfInstalments()}"
+        ></div>
+        <!-- /ko -->
+
+        <div class="actions-toolbar" style="margin-top: 10px;">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                            click: placeOrder,
+                            attr: {title: $t('Place Order')},
+                            enable: isPlaceOrderActive()
+                        ">
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
